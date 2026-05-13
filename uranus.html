@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uranus - Solar System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; overflow: hidden; font-family: -apple-system, sans-serif; }
+        .nav { position: fixed; top: 20px; left: 20px; z-index: 100; display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn { padding: 8px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); font-size: 10px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.3s; text-decoration: none; }
+        .btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn.active { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); color: #fff; }
+        .title { position: fixed; top: 24px; right: 24px; font-size: 10px; letter-spacing: 3px; color: rgba(140,220,220,0.8); text-transform: uppercase; z-index: 100; }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="index.html" class="btn">All</a>
+        <a href="mercury.html" class="btn">Mercury</a>
+        <a href="venus.html" class="btn">Venus</a>
+        <a href="earth.html" class="btn">Earth</a>
+        <a href="mars.html" class="btn">Mars</a>
+        <a href="jupiter.html" class="btn">Jupiter</a>
+        <a href="saturn.html" class="btn">Saturn</a>
+        <a href="uranus.html" class="btn active">Uranus</a>
+        <a href="neptune.html" class="btn">Neptune</a>
+        <a href="storm.html" class="btn">Storm</a>
+        <a href="nebula.html" class="btn">Nebula</a>
+        <a href="galaxy.html" class="btn">Galaxy</a>
+        <a href="aurora.html" class="btn">Aurora</a>
+        <a href="blackhole.html" class="btn">Black Hole</a>
+        <a href="supernova.html" class="btn">Supernova</a>
+        <a href="comet.html" class="btn">Comet</a>
+        <a href="sun.html" class="btn">Sun</a>
+    </div>
+    <div class="title">Uranus</div>
+    
+    <script type="importmap">
+    {"imports": {"three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"}}
+    </script>
+    
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+        
+        let scene, camera, renderer, composer, controls, planet, rings, time = 0;
+        
+        init();
+        animate();
+        
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 8, 45);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.body.appendChild(renderer.domElement);
+            
+            composer = new EffectComposer(renderer);
+            composer.addPass(new RenderPass(scene, camera));
+            const bloom = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 2, 0.5, 0.5);
+            bloom.threshold = 0.0;
+            composer.addPass(bloom);
+            
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            
+            createPlanet();
+            createRings();
+            
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                composer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        function createPlanet() {
+            const geometry = new THREE.BufferGeometry();
+            const count = 35000;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+            const sizes = new Float32Array(count);
+            const randoms = new Float32Array(count);
+            
+            for (let i = 0; i < count; i++) {
+                const i3 = i * 3;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                const r = 11;
+                
+                positions[i3] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i3 + 1] = r * Math.cos(phi);
+                positions[i3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+                
+                const b = 0.6 + Math.random() * 0.4;
+                colors[i3] = b * 0.7; colors[i3 + 1] = b * 0.95; colors[i3 + 2] = b;
+                
+                sizes[i] = Math.random() * 0.4 + 0.2;
+                randoms[i] = Math.random();
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: { uTime: { value: 0 }, uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) } },
+                vertexShader: `
+                    attribute float size; attribute float aRandom;
+                    uniform float uTime; uniform float uPixelRatio;
+                    varying vec3 vColor; varying float vAlpha;
+                    
+                    void main() {
+                        vColor = color;
+                        vec3 pos = position;
+                        float t = uTime * 0.25;
+                        float chaos = sin(t * 2.0 + aRandom * 8.0) * 0.5 + 0.5;
+                        float angle = atan(pos.z, pos.x);
+                        float newAngle = angle + t * 0.15 + aRandom;
+                        float r = length(pos.xz);
+                        pos.x = cos(newAngle) * r;
+                        pos.z = sin(newAngle) * r;
+                        vAlpha = (0.5 + chaos * 0.5) * 0.85;
+                        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+                        gl_PointSize = size * uPixelRatio * (200.0 / -mv.z);
+                        gl_Position = projectionMatrix * mv;
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vColor; varying float vAlpha;
+                    void main() {
+                        float d = length(gl_PointCoord - 0.5);
+                        float glow = 1.0 - smoothstep(0.0, 0.5, d);
+                        gl_FragColor = vec4(vColor, glow * vAlpha);
+                    }
+                `,
+                transparent: true, blending: THREE.NormalBlending, depthWrite: false, vertexColors: true
+            });
+            
+            planet = new THREE.Points(geometry, material);
+            scene.add(planet);
+        }
+        
+        function createRings() {
+            const geometry = new THREE.BufferGeometry();
+            const count = 25000;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+            const sizes = new Float32Array(count);
+            const randoms = new Float32Array(count);
+            
+            for (let i = 0; i < count; i++) {
+                const i3 = i * 3;
+                
+                const ringR = 15 + Math.random() * 8;
+                const theta = Math.random() * Math.PI * 2;
+                
+                positions[i3] = Math.cos(theta) * ringR;
+                positions[i3 + 1] = (Math.random() - 0.5) * 0.3;
+                positions[i3 + 2] = Math.sin(theta) * ringR;
+                
+                const b = 0.4 + Math.random() * 0.3;
+                colors[i3] = b * 0.8; colors[i3 + 1] = b; colors[i3 + 2] = b;
+                
+                sizes[i] = Math.random() * 0.3 + 0.1;
+                randoms[i] = Math.random();
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            geometry.setAttribute('aRandom', new THREE.BufferAttribute(randoms, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: { uTime: { value: 0 }, uPixelRatio: { value: Math.min(window.devicePixelRatio, 2) } },
+                vertexShader: `
+                    attribute float size; attribute float aRandom;
+                    uniform float uTime; uniform float uPixelRatio;
+                    varying float vAlpha;
+                    
+                    void main() {
+                        vec3 pos = position;
+                        float t = uTime * 0.3;
+                        float r = length(pos.xz);
+                        float angle = atan(pos.z, pos.x) + t * 0.1;
+                        pos.x = cos(angle) * r;
+                        pos.z = sin(angle) * r;
+                        vAlpha = 0.4 * 0.6;
+                        vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+                        gl_PointSize = size * uPixelRatio * (200.0 / -mv.z);
+                        gl_Position = projectionMatrix * mv;
+                    }
+                `,
+                fragmentShader: `
+                    varying float vAlpha;
+                    void main() {
+                        float d = length(gl_PointCoord - 0.5);
+                        float glow = 1.0 - smoothstep(0.0, 0.5, d);
+                        gl_FragColor = vec4(0.7, 0.9, 0.9, glow * vAlpha);
+                    }
+                `,
+                transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, vertexColors: true
+            });
+            
+            rings = new THREE.Points(geometry, material);
+            scene.add(rings);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.012;
+            if (planet) planet.material.uniforms.uTime.value = time;
+            if (rings) rings.material.uniforms.uTime.value = time;
+            controls.update();
+            composer.render();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Flow</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; overflow: hidden; font-family: -apple-system, sans-serif; }
+        
+        .title {
+            position: fixed;
+            top: 74px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .title-main {
+            font-size: 12px;
+            letter-spacing: 6px;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+        }
+        
+        .title-desc {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: rgba(255,255,255,0.3);
+            margin-top: 8px;
+        }
+        
+        .grid {
+            position: fixed;
+            top: 50%;
+            margin-top: 50px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 40px;
+            z-index: 100;
+        }
+        
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: rgba(255,255,255,0.5);
+            transition: all 0.3s;
+        }
+        
+        .item:hover {
+            color: #fff;
+            transform: scale(1.05);
+        }
+        
+        .icon {
+            width: 80px;
+            height: 80px;
+            border: 1px solid currentColor;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 12px;
+            background: rgba(255,255,255,0.02);
+        }
+        
+        .label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">
+        <div class="title-main">Cosmic Flow</div>
+        <div class="title-desc">Cosmic particle simulation</div>
+    </div>
+    
+    <div class="grid">
+        <a href="nebula.html" class="item">
+            <div class="icon">☁️</div>
+            <div class="label">Nebula</div>
+        </a>
+        <a href="galaxy.html" class="item">
+            <div class="icon">🌀</div>
+            <div class="label">Galaxy</div>
+        </a>
+        <a href="aurora.html" class="item">
+            <div class="icon">💚</div>
+            <div class="label">Aurora</div>
+        </a>
+        <a href="blackhole.html" class="item">
+            <div class="icon">⚫</div>
+            <div class="label">Black Hole</div>
+        </a>
+        <a href="supernova.html" class="item">
+            <div class="icon">💥</div>
+            <div class="label">Supernova</div>
+        </a>
+        <a href="comet.html" class="item">
+            <div class="icon">☄️</div>
+            <div class="label">Comet</div>
+        </a>
+        <a href="sun.html" class="item">
+            <div class="icon">☀️</div>
+            <div class="label">Sun</div>
+        </a>
+        <a href="storm.html" class="item">
+            <div class="icon">🌪️</div>
+            <div class="label">Storm</div>
+        </a>
+        <a href="mercury.html" class="item">
+            <div class="icon">☿</div>
+            <div class="label">Mercury</div>
+        </a>
+        <a href="venus.html" class="item">
+            <div class="icon">♀️</div>
+            <div class="label">Venus</div>
+        </a>
+        <a href="earth.html" class="item">
+            <div class="icon">🌍</div>
+            <div class="label">Earth</div>
+        </a>
+        <a href="mars.html" class="item">
+            <div class="icon">🔴</div>
+            <div class="label">Mars</div>
+        </a>
+        <a href="jupiter.html" class="item">
+            <div class="icon">🟤</div>
+            <div class="label">Jupiter</div>
+        </a>
+        <a href="saturn.html" class="item">
+            <div class="icon">🪐</div>
+            <div class="label">Saturn</div>
+        </a>
+        <a href="uranus.html" class="item">
+            <div class="icon">🔵</div>
+            <div class="label">Uranus</div>
+        </a>
+        <a href="neptune.html" class="item">
+            <div class="icon">🔵</div>
+            <div class="label">Neptune</div>
+        </a>
+    </div>
+</body>
+</html>
